@@ -14,9 +14,9 @@ import SchedulingPaymentType from "./schedulingPaymenteType";
 export default function SchedulingForm() {
 
     const [schedulingData, setSchedulingData] = useState({
-        name: '',
-        phoneNumber: '',
-        service: '',
+        name: 'Marcos',
+        phoneNumber: '85',
+        service: 'Corte',
         date: '',
         time: '',
         typePayment: ''
