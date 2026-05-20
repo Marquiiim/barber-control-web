@@ -5,27 +5,48 @@ import api from "@/services/apiInstance"
 
 export default function SchedulingDate() {
     const [optionsFound, setOptionsFound] = useState({
-        dates: null,
-        hours: null
+        dates: [],
+        hours: [],
+        selectedDate: null,
+        selectedHour: null
     })
 
-    const sysOptions = async () => {
+    const getAppointments = async (date) => {
         try {
-            const response = await Promise.allSettled([
-                api.get('/appointments/hours')
-            ])
-            console.log(response[0].value)
+            const response = await api.get('/appointments/schedules', {
+                params: {
+                    date: date ?? new Date().toISOString().split('T')[0]
+                }
+            })
+            console.log(response)
             setOptionsFound(prev => ({
                 ...prev,
-                hours: response[0].value
+                dates: response.dates,
+                hours: response.hours
             }))
         } catch (error) {
             console.log(error)
         }
     }
 
+    const dataSelected = (date) => {
+        if (optionsFound.selectedDate === date) {
+            return setOptionsFound(prev => ({
+                ...prev,
+                selectedDate: null
+            }))
+            getAppointments()
+        }
+
+        setOptionsFound(prev => ({
+            ...prev,
+            selectedDate: date
+        }))
+        getAppointments(date)
+    }
+
     useEffect(() => {
-        sysOptions()
+        getAppointments()
     }, [])
 
     return (
@@ -35,11 +56,15 @@ export default function SchedulingDate() {
                     Data
                 </Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                    {/*IRÁ SER MAPEADO AS DATAS DO BANCO DE DADOS EM LISTAS*/}
-                    <Button
-                        className='w-full'>
-                        01/02
-                    </Button>
+                    {optionsFound.dates.map((date, index) => (
+                        <Button
+                            onClick={() => dataSelected(date.formattedDate)}
+                            key={index}
+                            className='w-full'
+                            variant={optionsFound.selectedDate === date.formattedDate ? 'default' : 'outline'}>
+                            {date.formattedDate}
+                        </Button>
+                    ))}
                 </div>
             </div>
 
@@ -48,11 +73,11 @@ export default function SchedulingDate() {
                     Horário
                 </Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                    {/*IRÁ SER MAPEADO OS HORÁRIOS DO BANCO DE DADOS EM LISTAS*/}
                     {optionsFound.hours.map(hour => (
                         <Button
-                            key={hour.id}>
-                            {hour.availables}
+                            key={hour.id}
+                            variant={optionsFound.selectedHour === hour.time ? 'default' : 'outline'}>
+                            {hour.time}
                         </Button>
                     ))}
                 </div>
