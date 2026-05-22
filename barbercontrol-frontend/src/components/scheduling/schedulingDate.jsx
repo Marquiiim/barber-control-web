@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import api from "@/services/apiInstance"
 
-export default function SchedulingDate() {
+export default function SchedulingDate({ getSelectedSchedule }) {
     const [optionsFound, setOptionsFound] = useState({
         dates: [],
         hours: [],
@@ -18,7 +18,6 @@ export default function SchedulingDate() {
                     date: date ?? new Date().toISOString().split('T')[0]
                 }
             })
-            console.log(response)
             setOptionsFound(prev => ({
                 ...prev,
                 dates: response.dates,
@@ -31,11 +30,11 @@ export default function SchedulingDate() {
 
     const dataSelected = (date) => {
         if (optionsFound.selectedDate === date) {
-            return setOptionsFound(prev => ({
+            setOptionsFound(prev => ({
                 ...prev,
                 selectedDate: null
             }))
-            getAppointments()
+            return getAppointments()
         }
 
         setOptionsFound(prev => ({
@@ -44,6 +43,26 @@ export default function SchedulingDate() {
         }))
         getAppointments(date)
     }
+
+    const hourSelected = (hour) => {
+        if (optionsFound.selectedHour === hour) {
+            setOptionsFound(prev => ({
+                ...prev,
+                selectedHour: null
+            }))
+            getSelectedSchedule('', '')
+            return
+        }
+
+        setOptionsFound(prev => ({
+            ...prev,
+            selectedHour: hour
+        }))
+
+        if (optionsFound.selectedDate) getSelectedSchedule(optionsFound.selectedDate, hour)
+    }
+
+
 
     useEffect(() => {
         getAppointments()
@@ -75,6 +94,7 @@ export default function SchedulingDate() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                     {optionsFound.hours.map(hour => (
                         <Button
+                            onClick={() => hourSelected(hour.time)}
                             key={hour.id}
                             variant={optionsFound.selectedHour === hour.time ? 'default' : 'outline'}>
                             {hour.time}

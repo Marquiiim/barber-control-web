@@ -14,17 +14,43 @@ import SchedulingPaymentType from "./schedulingPaymenteType";
 export default function SchedulingForm() {
 
     const [schedulingData, setSchedulingData] = useState({
-        name: 'Marcos',
-        phoneNumber: '85',
-        service: 'Corte',
+        name: '',
+        phoneNumber: '',
+        service: '',
         date: '',
-        time: '',
+        hour: '',
         typePayment: ''
     })
 
+    const handleSelectedService = (service) => {
+        setSchedulingData(prev => ({
+            ...prev,
+            service: service
+        }))
+    }
+
+    const handleSelectedSchedule = (date, hour) => {
+        setSchedulingData(prev => ({
+            ...prev,
+            date: date,
+            hour: hour
+        }))
+    }
+
+    const handleSelectedPayment = (payment) => {
+        setSchedulingData(prev => ({
+            ...prev,
+            payment: payment
+        }))
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log('ENVIADO')
+        try {
+            console.log(schedulingData)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
 
@@ -44,7 +70,7 @@ export default function SchedulingForm() {
                         <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
-                                id="name"
+                                onChange={(e) => setSchedulingData(prev => ({ ...prev, name: e.target.value }))}
                                 placeholder="Digite seu nome completo"
                                 type="text"
                                 required
@@ -60,7 +86,7 @@ export default function SchedulingForm() {
                         <div className="relative">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
-                                id="phone"
+                                onChange={(e) => setSchedulingData(prev => ({ ...prev, phoneNumber: e.target.value }))}
                                 placeholder="99 99999-9999"
                                 type="tel"
                                 required
@@ -81,15 +107,20 @@ export default function SchedulingForm() {
 
                 <div className="grid gap-4">
 
-                    <SchedulingService />
+                    <SchedulingService
+                        getSelectedService={handleSelectedService}
+                    />
 
                     {schedulingData.service !== '' && (
-                        <SchedulingDate />
+                        <SchedulingDate
+                            getSelectedSchedule={handleSelectedSchedule}
+                        />
                     )}
 
                     {schedulingData.date !== '' &&
-                        schedulingData.time !== '' && (
-                            <SchedulingPaymentType />
+                        schedulingData.hour !== '' && (
+                            <SchedulingPaymentType
+                                getSelectedPayment={handleSelectedPayment} />
                         )}
 
                 </div>
