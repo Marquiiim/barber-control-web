@@ -3,13 +3,23 @@ import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import api from "@/services/apiInstance"
 
-export default function SchedulingDate({ getSelectedSchedule }) {
+export default function SchedulingDate({ getSelectedSchedule, resetTrigger }) {
     const [optionsFound, setOptionsFound] = useState({
         dates: [],
         hours: [],
         selectedDate: null,
         selectedHour: null
     })
+
+    useEffect(() => {
+        if (resetTrigger) {
+            setOptionsFound(prev => ({
+                ...prev,
+                selectedDate: null,
+                selectedHour: null
+            }))
+        }
+    }, [resetTrigger])
 
     const getAppointments = async (date) => {
         try {
@@ -32,7 +42,8 @@ export default function SchedulingDate({ getSelectedSchedule }) {
         if (optionsFound.selectedDate === date) {
             setOptionsFound(prev => ({
                 ...prev,
-                selectedDate: null
+                selectedDate: null,
+                selectedHour: null
             }))
             return getAppointments()
         }
@@ -44,8 +55,8 @@ export default function SchedulingDate({ getSelectedSchedule }) {
         getAppointments(date)
     }
 
-    const hourSelected = (hour) => {
-        if (optionsFound.selectedHour === hour) {
+    const hourSelected = (hourId) => {
+        if (optionsFound.selectedHour === hourId) {
             setOptionsFound(prev => ({
                 ...prev,
                 selectedHour: null
@@ -56,10 +67,10 @@ export default function SchedulingDate({ getSelectedSchedule }) {
 
         setOptionsFound(prev => ({
             ...prev,
-            selectedHour: hour
+            selectedHour: hourId
         }))
 
-        if (optionsFound.selectedDate) getSelectedSchedule(optionsFound.selectedDate, hour)
+        if (optionsFound.selectedDate) getSelectedSchedule(optionsFound.selectedDate, hourId)
     }
 
 
@@ -77,11 +88,11 @@ export default function SchedulingDate({ getSelectedSchedule }) {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                     {optionsFound.dates.map((date, index) => (
                         <Button
-                            onClick={() => dataSelected(date.formattedDate)}
+                            onClick={() => dataSelected(date.formattedFromValue)}
                             key={index}
                             className='w-full'
-                            variant={optionsFound.selectedDate === date.formattedDate ? 'default' : 'outline'}>
-                            {date.formattedDate}
+                            variant={optionsFound.selectedDate === date.formattedFromValue ? 'default' : 'outline'}>
+                            {date.formattedFromDate}
                         </Button>
                     ))}
                 </div>
@@ -91,16 +102,17 @@ export default function SchedulingDate({ getSelectedSchedule }) {
                 <Label className="text-sm font-medium flex items-center gap-2">
                     Horário
                 </Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                    {optionsFound.hours.map(hour => (
-                        <Button
-                            onClick={() => hourSelected(hour.time)}
-                            key={hour.id}
-                            variant={optionsFound.selectedHour === hour.time ? 'default' : 'outline'}>
-                            {hour.time}
-                        </Button>
-                    ))}
-                </div>
+                {optionsFound.selectedDate &&
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                        {optionsFound.hours.map(hour => (
+                            <Button
+                                onClick={() => hourSelected(hour.id)}
+                                key={hour.id}
+                                variant={optionsFound.selectedHour === hour.id ? 'default' : 'outline'}>
+                                {hour.time}
+                            </Button>
+                        ))}
+                    </div>}
             </div>
         </div>
     );

@@ -6,7 +6,6 @@ interface ApiResponse<T = any> {
     data: T
     message: string
     timestamp?: string
-    path?: string
 }
 
 const api = axios.create({
@@ -16,6 +15,8 @@ const api = axios.create({
 
 api.interceptors.response.use(
     response => {
+        console.log(response)
+
         const data = response.data as ApiResponse
 
         if (data.success && data.message) toast.success(data.message)

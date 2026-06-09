@@ -1,13 +1,24 @@
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { QrCode, CreditCard, Banknote, Barcode } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function SchedulingPaymentType({ getSelectedPayment }) {
+export default function SchedulingPaymentType({ getSelectedPayment, resetTrigger }) {
     const [typePayment, setTypePayment] = useState('')
 
+    useEffect(() => {
+        if (resetTrigger) {
+            setTypePayment('')
+            getSelectedPayment('')
+        }
+    }, [resetTrigger])
+
     const setPayment = (type) => {
-        if (type === typePayment) return setTypePayment('')
+        if (type === typePayment) {
+            setTypePayment('')
+            getSelectedPayment('')
+            return
+        }
         setTypePayment(type)
         getSelectedPayment(type)
     }
@@ -21,7 +32,7 @@ export default function SchedulingPaymentType({ getSelectedPayment }) {
                 </Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                     <Button
-                        onClick={(e) => setPayment('pix')}
+                        onClick={() => setPayment('pix')}
                         className='w-full whitespace-normal break-words h-auto py-2 px-3 text-sm'
                         value='pix'
                         variant={typePayment === 'pix' ? 'default' : 'outline'}>
@@ -29,23 +40,23 @@ export default function SchedulingPaymentType({ getSelectedPayment }) {
                         PIX
                     </Button>
                     <Button
-                        onClick={(e) => setPayment('debit')}
+                        onClick={() => setPayment('d_bito')}
                         className='w-full whitespace-normal break-words h-auto py-2 px-3 text-sm'
-                        variant={typePayment === 'debit' ? 'default' : 'outline'}>
+                        variant={typePayment === 'd_bito' ? 'default' : 'outline'}>
                         <Barcode />
                         DÉBITO
                     </Button>
                     <Button
-                        onClick={(e) => setPayment('credit')}
+                        onClick={() => setPayment('cr_dito')}
                         className='w-full whitespace-normal break-words h-auto py-2 px-3 text-sm'
-                        variant={typePayment === 'credit' ? 'default' : 'outline'}>
+                        variant={typePayment === 'cr_dito' ? 'default' : 'outline'}>
                         <CreditCard />
                         CRÉDITO
                     </Button>
                     <Button
-                        onClick={(e) => setPayment('money')}
+                        onClick={() => setPayment('dinheiro')}
                         className='w-full whitespace-normal break-words h-auto py-2 px-3 text-sm'
-                        variant={typePayment === 'money' ? 'default' : 'outline'}>
+                        variant={typePayment === 'dinheiro' ? 'default' : 'outline'}>
                         <Banknote />
                         DINHEIRO
                     </Button>

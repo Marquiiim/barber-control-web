@@ -20,7 +20,15 @@ export default function App() {
           </CardContent>
         </Card>
       </div>
-      <Toaster />
+
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        expand={false}
+        duration={4000}
+      />
+
     </>
   )
 }

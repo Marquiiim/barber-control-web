@@ -3,11 +3,20 @@ import api from "@/services/apiInstance"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 
-export default function SchedulingService({ getSelectedService }) {
+export default function SchedulingService({ getSelectedService, resetTrigger }) {
     const [optionsFound, setOptionsFound] = useState({
         services: [],
         selectedService: null
     })
+
+    useEffect(() => {
+        if (resetTrigger) {
+            setOptionsFound(prev => ({
+                ...prev,
+                selectedService: null
+            }))
+        }
+    }, [resetTrigger])
 
     const getServices = async () => {
         try {
@@ -50,10 +59,11 @@ export default function SchedulingService({ getSelectedService }) {
                 </Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                     {optionsFound.services.map(service => (
-                        <Button onClick={() => serviceSelected(service.availables)}
+                        <Button onClick={() => serviceSelected(service.id)}
                             key={service.id}
                             className='w-full whitespace-normal break-words h-auto py-2 px-3 text-sm'
-                            variant={optionsFound.selectedService === service.availables ? 'default' : 'outline'}>
+                            variant={optionsFound.selectedService === service.id ? 'default' : 'outline'}
+                            title={service.description}>
                             {service.availables}
                         </Button>
                     ))}
