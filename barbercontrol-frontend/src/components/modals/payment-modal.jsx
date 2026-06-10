@@ -7,6 +7,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Copy, Check, Clock, QrCode } from "lucide-react";
@@ -51,10 +52,15 @@ export default function PixPayment({ open, onClose, paymentData }) {
         const checkPaymentStatus = async () => {
             try {
                 const response = await api.get(`/payment/${paymentData.payment_uuid}`)
-                console.log(response)
                 setStatus(response.status)
-                if (response.status === 'aprovado') clearInterval(interval)
-                if (response.status === 'expirado') onClose()
+                if (response.status === 'aprovado') {
+                    clearInterval(interval)
+                    toast.success(response.message)
+                }
+                if (response.status === 'expirado') {
+                    onClose()
+                    toast.warning(response.message)
+                }
             } catch (error) {
                 console.log(error)
             }
@@ -116,7 +122,7 @@ export default function PixPayment({ open, onClose, paymentData }) {
                     <div className="text-center bg-muted rounded-lg p-3">
                         <p className="text-sm text-muted-foreground">Valor</p>
                         <p className="text-2xl font-bold">
-                            R$ {paymentData?.amount?.toFixed(2) || "0,00"}
+                            R$ {Number(paymentData?.amount).toFixed(2) || "0,00"}
                         </p>
                     </div>
 

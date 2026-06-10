@@ -13,6 +13,7 @@ import SchedulingService from "./schedulingService";
 import SchedulingDate from "./schedulingDate";
 import SchedulingPaymentType from "./schedulingPaymenteType";
 import PaymentModal from "../modals/payment-modal";
+import { toast } from "sonner";
 
 export default function SchedulingForm() {
 
@@ -71,6 +72,7 @@ export default function SchedulingForm() {
             })
             setResetKey(prev => prev + 1)
             setPayment({ response: response.payment, showModal: true })
+            if (response.payment.status === 'pending') toast.warning(response.message)
         } catch (error) {
             console.log(error)
         }
