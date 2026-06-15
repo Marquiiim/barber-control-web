@@ -60,7 +60,6 @@ export default function SchedulingForm() {
         e.preventDefault()
         try {
             const response = await api.post('/appointments/to-schedule', schedulingData)
-            console.log(response)
             setSchedulingData({
                 name: '',
                 email: '',
@@ -72,12 +71,11 @@ export default function SchedulingForm() {
             })
             setResetKey(prev => prev + 1)
             setPayment({ response: response.payment, showModal: true })
-            if (response.payment.status === 'pending') toast.warning(response.message)
+            if (response.success === false && response.payment.status === 'pending') toast.warning(response.message)
         } catch (error) {
             console.log(error)
         }
     }
-
 
     return (
         <>

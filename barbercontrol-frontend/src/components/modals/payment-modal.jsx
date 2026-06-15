@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     Dialog,
     DialogContent,
@@ -17,6 +17,7 @@ export default function PixPayment({ open, onClose, paymentData }) {
     const [copied, setCopied] = useState(false);
     const [timeLeft, setTimeLeft] = useState(null);
     const [status, setStatus] = useState(paymentData?.status || "pendente");
+    const intervalRef = useRef(null)
 
     useEffect(() => {
         if (!paymentData?.expiration_date) return;
@@ -49,25 +50,27 @@ export default function PixPayment({ open, onClose, paymentData }) {
     };
 
     useEffect(() => {
+        if (!paymentData?.payment_uuid) return
         const checkPaymentStatus = async () => {
             try {
                 const response = await api.get(`/payment/${paymentData.payment_uuid}`)
                 setStatus(response.status)
                 if (response.status === 'aprovado') {
-                    clearInterval(interval)
+                    clearInterval(intervalRef.current)
                     toast.success(response.message)
                 }
                 if (response.status === 'expirado') {
+                    clearInterval(intervalRef.current)
                     onClose()
                     toast.warning(response.message)
                 }
             } catch (error) {
-                console.log(error)
+                console.log(error.message)
             }
         }
-        const interval = setInterval(checkPaymentStatus, 5000)
+        intervalRef.current = setInterval(checkPaymentStatus, 5000)
 
-        return () => clearInterval(interval)
+        return () => clearInterval(intervalRef.current)
     }, [paymentData.payment_uuid])
 
     if (status === 'aprovado') {
@@ -148,7 +151,7 @@ export default function PixPayment({ open, onClose, paymentData }) {
                         )}
                     </Button>
 
-                    {status === 'pendente' || status === 'pendding' && (
+                    {(status === 'pendente' || status === 'pending') && (
                         <p className="text-center text-sm text-muted-foreground">
                             Aguardando pagamento...
                         </p>

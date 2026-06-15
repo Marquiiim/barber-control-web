@@ -15,8 +15,6 @@ const api = axios.create({
 
 api.interceptors.response.use(
     response => {
-        console.log(response)
-
         const data = response.data as ApiResponse
 
         if (data.success && data.message) toast.success(data.message)
