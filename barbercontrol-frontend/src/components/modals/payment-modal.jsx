@@ -49,6 +49,15 @@ export default function PixPayment({ open, onClose, paymentData }) {
         setTimeout(() => setCopied(false), 2000);
     };
 
+    const appointmentDelete = async () => {
+        try {
+            const response = await api.delete(`/appointments/${paymentData.payment_uuid}`)
+            if (response.success === true) onClose()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         if (!paymentData?.payment_uuid) return
         const checkPaymentStatus = async () => {
@@ -159,8 +168,11 @@ export default function PixPayment({ open, onClose, paymentData }) {
                 </div>
 
                 <DialogFooter className="sm:justify-center">
+                    <Button variant="destructive" onClick={appointmentDelete}>
+                        Cancelar agendamento
+                    </Button>
                     <Button variant="ghost" onClick={onClose}>
-                        Cancelar
+                        Fechar
                     </Button>
                 </DialogFooter>
             </DialogContent>
