@@ -88,7 +88,7 @@ export default function PixPayment({ open, onClose, paymentData }) {
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle className="text-center text-green-600">
-                            ✅ Pagamento Confirmado!
+                            Pagamento Confirmado!
                         </DialogTitle>
                         <DialogDescription className="text-center">
                             Seu pagamento foi aprovado. Agendamento confirmado!
